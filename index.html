@@ -4,65 +4,157 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Enggar Irawan — CV</title>
-  <meta name="description" content="CV Enggar Irawan — Infrastructure Engineer | Linux & Network Specialist" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <meta name="description" content="CV Enggar Irawan — Infrastructure Engineer | Linux & Network Specialist | Aspiring DevOps" />
+  <meta name="theme-color" content="#24292f" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <div class="cv-wrapper">
-
-    <!-- Top bar -->
-    <div class="topbar">
-      <span class="topbar-label">Bagikan link ini, atau simpan sebagai PDF:</span>
-      <button class="btn-print" onclick="window.print()">⬇ Download / Print PDF</button>
+  <!-- GitHub-style navbar -->
+  <header class="gh-navbar">
+    <div class="gh-navbar-inner">
+      <a class="gh-logo" href="https://github.com/keiijzz" target="_blank" rel="noopener" aria-label="GitHub keiijzz">
+        <svg class="icon" viewBox="0 0 16 16" width="32" height="32" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
+      </a>
+      <span class="gh-breadcrumb">
+        <span class="gh-crumb-owner">keiijzz</span>
+        <svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.427 4.427l1.396-1.396a.25.25 0 0 1 .354 0l3.42 3.42c.196.196.196.513 0 .709L8.18 10.58a.25.25 0 0 1-.354 0L6.427 9.18a.25.25 0 0 1 0-.354L7.7 7.553H4.75a.75.75 0 0 1 0-1.5H7.7L6.427 4.78a.25.25 0 0 1 0-.354Z"></path></svg>
+        <span class="gh-crumb-repo">curriculum-vitae</span>
+      </span>
+      <button class="btn btn-green" id="btn-print" onclick="window.print()">Download / Print PDF</button>
     </div>
+  </header>
 
-    <div class="cv-content">
+  <main class="gh-main">
 
-      <!-- HEADER -->
-      <header id="cv-header"></header>
+    <!-- Profile header -->
+    <section class="gh-profile">
+      <div class="gh-profile-main">
+        <img id="gh-avatar" class="gh-avatar" alt="Foto profil" />
+        <div class="gh-profile-info">
+          <h1 class="gh-name"><span id="gh-name"></span><span class="gh-handle" id="gh-handle"></span></h1>
+          <p class="gh-about" id="gh-about"></p>
+          <div class="gh-meta" id="gh-meta"></div>
+          <div class="gh-status" id="gh-status"></div>
+        </div>
+      </div>
+      <div class="gh-profile-actions">
+        <a class="btn btn-outline" id="btn-github" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-outline" id="btn-linkedin" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </section>
 
-      <!-- SKILLS -->
-      <section class="cv-section">
-        <h2 class="section-title">Skills</h2>
-        <div class="skills-grid" id="skills-content"></div>
+    <!-- Stats -->
+    <section class="gh-stats" id="gh-stats"></section>
+
+    <!-- Tabs -->
+    <nav class="gh-tabs" id="gh-tabs" role="tablist" aria-label="Navigasi CV">
+      <button class="gh-tab active" data-panel="panel-overview" role="tab">Overview</button>
+      <button class="gh-tab" data-panel="panel-experience" role="tab">Experience</button>
+      <button class="gh-tab" data-panel="panel-projects" role="tab">Projects</button>
+      <button class="gh-tab" data-panel="panel-certifications" role="tab">Sertifikasi</button>
+      <button class="gh-tab" data-panel="panel-education" role="tab">Pendidikan</button>
+    </nav>
+
+    <div class="gh-panels">
+
+      <!-- OVERVIEW -->
+      <section id="panel-overview" class="gh-panel active">
+        <div class="gh-cols">
+          <div class="gh-col-main">
+            <div class="gh-card">
+              <div class="gh-card-hdr">
+                <h2>Kontribusi <span class="gh-count" id="gh-heat-title"></span></h2>
+                <span class="gh-legend" id="gh-heat-legend"></span>
+              </div>
+              <div id="gh-heatmap" class="gh-heat"></div>
+            </div>
+
+            <div class="gh-card">
+              <div class="gh-card-hdr">
+                <h2>Pinned <span class="gh-count" id="gh-pinned-count"></span></h2>
+              </div>
+              <div class="gh-pinned" id="gh-pinned"></div>
+            </div>
+
+            <div class="gh-card">
+              <div class="gh-card-hdr">
+                <h2>Kemampuan <span class="gh-count" id="gh-skills-count"></span></h2>
+              </div>
+              <div id="gh-skills"></div>
+            </div>
+          </div>
+
+          <aside class="gh-col-side">
+            <div class="gh-card">
+              <div class="gh-card-hdr"><h2>Tentang</h2></div>
+              <p class="gh-about-text" id="gh-about-text"></p>
+            </div>
+
+            <div class="gh-card">
+              <div class="gh-card-hdr"><h2>Highlights</h2></div>
+              <ul class="gh-list" id="gh-highlights"></ul>
+            </div>
+
+            <div class="gh-card">
+              <div class="gh-card-hdr"><h2>Organisasi</h2></div>
+              <div class="gh-org" id="gh-orgs"></div>
+            </div>
+
+            <div class="gh-card">
+              <div class="gh-card-hdr"><h2>Kontak</h2></div>
+              <div class="gh-links" id="gh-contacts"></div>
+            </div>
+          </aside>
+        </div>
       </section>
 
       <!-- EXPERIENCE -->
-      <section class="cv-section">
-        <h2 class="section-title">Experience</h2>
-        <div class="timeline" id="experience-content"></div>
+      <section id="panel-experience" class="gh-panel">
+        <div class="gh-card">
+          <div class="gh-card-hdr">
+            <h2>Experience <span class="gh-count" id="gh-exp-count"></span></h2>
+          </div>
+          <div class="gh-repo-list" id="gh-experience"></div>
+        </div>
       </section>
 
       <!-- PROJECTS -->
-      <section class="cv-section">
-        <h2 class="section-title">Projects & Publications</h2>
-        <div class="projects-list" id="projects-content"></div>
+      <section id="panel-projects" class="gh-panel">
+        <div class="gh-card">
+          <div class="gh-card-hdr">
+            <h2>Projects &amp; Publikasi <span class="gh-count" id="gh-projects-count"></span></h2>
+          </div>
+          <div class="gh-repo-list" id="gh-projects"></div>
+        </div>
       </section>
 
       <!-- CERTIFICATIONS -->
-      <section class="cv-section">
-        <h2 class="section-title">Sertifikasi</h2>
-        <div class="certs-list" id="certifications-content"></div>
+      <section id="panel-certifications" class="gh-panel">
+        <div class="gh-card">
+          <div class="gh-card-hdr">
+            <h2>Sertifikasi <span class="gh-count" id="gh-certs-count"></span></h2>
+          </div>
+          <div class="gh-ach" id="gh-certifications"></div>
+        </div>
       </section>
 
       <!-- EDUCATION -->
-      <section class="cv-section">
-        <h2 class="section-title">Pendidikan</h2>
-        <div class="timeline" id="education-content"></div>
+      <section id="panel-education" class="gh-panel">
+        <div class="gh-card">
+          <div class="gh-card-hdr">
+            <h2>Pendidikan <span class="gh-count" id="gh-edu-count"></span></h2>
+          </div>
+          <div class="gh-repo-list" id="gh-education"></div>
+        </div>
       </section>
 
-      <!-- Footer print -->
-      <footer id="cv-footer"></footer>
-
     </div>
-  </div>
+  </main>
+
+  <footer id="cv-footer" class="cv-footer"></footer>
 
   <script src="js/data.js"></script>
   <script src="js/render.js"></script>
-
 </body>
 </html>
