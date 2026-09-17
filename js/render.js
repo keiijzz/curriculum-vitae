@@ -1,5 +1,5 @@
 /**
- * render.js — Render + interaksi CV
+ * render.js — Render + interaksi CV (bilingual EN/ID)
  */
 
 const ICONS = {
@@ -15,12 +15,83 @@ const ICONS = {
   cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1 .6-8A5.5 5.5 0 0 1 18 10.6 3.7 3.7 0 0 1 17.5 18H7Z"/></svg>',
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>',
 };
 
 const $ = (id) => document.getElementById(id);
 const ic = (n) => ICONS[n] || '';
 
+const LANG_LABELS = { en: 'EN', id: 'ID' };
+const LANG_TAGS = { en: 'en', id: 'id' };
+const DATE_LOCALES = { en: 'en-US', id: 'id-ID' };
+
+let LANG = 'en';
+let T = (typeof CV !== 'undefined' && CV.en) || null;
+let typerToken = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
+  LANG = resolveDefaultLang();
+  T = CV[LANG];
+  initTheme();
+  initLang();
+  initNav();
+  initPrint();
+  initToTop();
+  renderAll();
+  finalizeForPrint();
+});
+
+/* ── Bahasa ── */
+function resolveDefaultLang() {
+  try {
+    const param = new URLSearchParams(location.search).get('lang');
+    if (param && CV[param]) return param;
+  } catch (e) {}
+  try {
+    const saved = localStorage.getItem('cv-lang');
+    if (saved && CV[saved]) return saved;
+  } catch (e) {}
+  return CV.default && CV[CV.default] ? CV.default : 'en';
+}
+
+function initLang() {
+  updateLangButton();
+  const btn = $('lang-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    setLang(LANG === 'en' ? 'id' : 'en');
+  });
+}
+
+function updateLangButton() {
+  const label = $('lang-label');
+  if (label) label.textContent = LANG_LABELS[LANG] || LANG.toUpperCase();
+  const btn = $('lang-toggle');
+  if (btn) {
+    const title = (T && T.ui && T.ui.langTitle) || 'Switch language';
+    btn.setAttribute('title', title);
+    btn.setAttribute('aria-label', title);
+  }
+}
+
+function setLang(lang) {
+  if (!CV[lang] || lang === LANG) return;
+  LANG = lang;
+  T = CV[lang];
+  try { localStorage.setItem('cv-lang', lang); } catch (e) {}
+  try {
+    const url = new URL(location.href);
+    if (lang === (CV.default || 'en')) url.searchParams.delete('lang');
+    else url.searchParams.set('lang', lang);
+    history.replaceState(null, '', url);
+  } catch (e) {}
+  renderAll();
+}
+
+/* ── Render pipeline ── */
+function renderAll() {
+  document.documentElement.lang = LANG_TAGS[LANG] || LANG;
+  applyI18n();
   renderBrand();
   renderHero();
   renderStats();
@@ -28,19 +99,28 @@ document.addEventListener('DOMContentLoaded', () => {
   renderExpertise();
   renderExperience();
   renderSkills();
+  renderLanguages();
   renderProjects();
   renderCertifications();
   renderEducation();
+  renderPublications();
   renderContact();
   renderFooter();
-  initTheme();
-  initNav();
+  updateLangButton();
   initReveal();
   initCountUp();
   initTypewriter();
-  initToTop();
-  finalizeForPrint();
-});
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = T.ui[el.getAttribute('data-i18n')];
+    if (typeof v === 'string') el.textContent = v;
+  });
+  document.title = `${T.identity.name} — ${T.ui.heroEyebrow}`;
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta) meta.setAttribute('content', T.identity.tagline);
+}
 
 /* ── Pastikan nilai final tampil saat di-print ── */
 function finalizeForPrint() {
@@ -49,25 +129,25 @@ function finalizeForPrint() {
       el.textContent = (parseFloat(el.dataset.target) || 0) + (el.dataset.suffix || '');
     });
     const role = $('hero-role');
-    if (role) role.textContent = (CV.identity.role || '').split('|')[0].trim();
+    if (role) role.textContent = (T.identity.role || '').split('|')[0].trim();
   });
 }
 
 /* ── Brand ── */
 function renderBrand() {
-  $('brand-name').textContent = CV.identity.name;
-  $('brand-role').textContent = CV.identity.shortRole || 'Network & Infrastructure';
+  $('brand-name').textContent = T.identity.name;
+  $('brand-role').textContent = T.ui.brandRole;
 }
 
 /* ── Hero ── */
 function renderHero() {
-  const id = CV.identity;
-  $('hero-eyebrow').innerHTML = `&lt;/&gt; ${id.eyebrow || 'Network & Infrastructure Engineer'}`;
+  const id = T.identity;
+  $('hero-eyebrow').innerHTML = `&lt;/&gt; ${T.ui.heroEyebrow}`;
   $('hero-name').textContent = id.name;
   $('hero-pitch').textContent = id.tagline || id.about;
 
   const cta = $('cta-primary');
-  if (id.email) { cta.href = `mailto:${id.email}`; cta.innerHTML = `${ic('mail')} Hubungi Saya`; }
+  if (id.email) { cta.href = `mailto:${id.email}`; cta.innerHTML = `${ic('mail')} ${T.ui.ctaPrimary}`; }
   else cta.style.display = 'none';
 
   const social = [];
@@ -84,7 +164,7 @@ function renderHero() {
     ? `<img src="${id.avatar}" alt="${id.name}" />`
     : `<span class="monogram">${initials}</span>`;
   $('hc-name').textContent = id.name;
-  $('hc-role').textContent = id.shortRole || 'Network & Infrastructure';
+  $('hc-role').textContent = id.shortRole || T.ui.brandRole;
   $('hc-meta').innerHTML = [
     id.location ? `<span class="hc-item">${ic('location')}${id.location}</span>` : '',
     id.email ? `<span class="hc-item">${ic('mail')}<a href="mailto:${id.email}">${id.email}</a></span>` : '',
@@ -95,7 +175,7 @@ function renderHero() {
 
 /* ── Stats ── */
 function renderStats() {
-  $('stats').innerHTML = CV.stats.map(s => `
+  $('stats').innerHTML = T.stats.map(s => `
     <div class="stat reveal">
       <div class="stat-num" data-target="${s.num}" data-suffix="${s.suffix || ''}">0</div>
       <div class="stat-label">${s.label}</div>
@@ -105,10 +185,10 @@ function renderStats() {
 
 /* ── About + expertise ── */
 function renderAbout() {
-  $('about-text').textContent = CV.identity.about;
+  $('about-text').textContent = T.identity.about;
 }
 function renderExpertise() {
-  $('expertise').innerHTML = CV.expertise.map(e => `
+  $('expertise').innerHTML = T.expertise.map(e => `
     <div class="exp-card reveal">
       <div class="exp-head">
         <span class="exp-ic">${ic(e.icon)}</span>
@@ -122,7 +202,7 @@ function renderExpertise() {
 
 /* ── Experience ── */
 function renderExperience() {
-  $('experience').innerHTML = CV.experience.map(exp => `
+  $('experience').innerHTML = T.experience.map(exp => `
     <div class="tl-item reveal${exp.current ? ' current' : ''}">
       <span class="tl-dot"></span>
       <div class="tl-card">
@@ -141,7 +221,7 @@ function renderExperience() {
 
 /* ── Skills ── */
 function renderSkills() {
-  $('skills').innerHTML = CV.skills.map(g => `
+  $('skills').innerHTML = T.skills.map(g => `
     <div class="skill-card reveal">
       <div class="skill-top">
         <span class="skill-name">${g.category}</span>
@@ -153,9 +233,24 @@ function renderSkills() {
   `).join('');
 }
 
+/* ── Languages ── */
+function renderLanguages() {
+  const wrap = $('languages');
+  if (!wrap) return;
+  wrap.innerHTML = T.languages.map(l => `
+    <div class="lang-card reveal">
+      <div class="lang-top">
+        <span class="lang-name">${l.name}</span>
+        <span class="lang-level">${l.level}</span>
+      </div>
+      <div class="lang-bar"><i data-level="${l.pct}" style="--pct:${l.pct}%"></i></div>
+    </div>
+  `).join('');
+}
+
 /* ── Projects ── */
 function renderProjects() {
-  $('projects').innerHTML = CV.projects.map(p => `
+  $('projects').innerHTML = T.projects.map(p => `
     <article class="project reveal">
       <div class="proj-top">
         <span class="proj-period">${p.period}</span>
@@ -170,7 +265,7 @@ function renderProjects() {
 
 /* ── Certifications ── */
 function renderCertifications() {
-  $('certifications').innerHTML = CV.certifications.map(c => `
+  $('certifications').innerHTML = T.certifications.map(c => `
     <div class="cert reveal">
       <span class="cert-ic">${c.badge || '🏅'}</span>
       <div>
@@ -183,7 +278,7 @@ function renderCertifications() {
 
 /* ── Education ── */
 function renderEducation() {
-  $('education').innerHTML = CV.education.map(e => `
+  $('education').innerHTML = T.education.map(e => `
     <div class="edu-card reveal">
       <div>
         <p class="edu-degree">${e.degree}</p>
@@ -195,11 +290,27 @@ function renderEducation() {
   `).join('');
 }
 
+/* ── Publications ── */
+function renderPublications() {
+  const wrap = $('publications');
+  if (!wrap) return;
+  wrap.innerHTML = T.publications.map(p => `
+    <div class="pub-card reveal">
+      <span class="pub-ic">${ic('doc')}</span>
+      <div>
+        <p class="pub-title">${p.title}</p>
+        <p class="pub-meta">${p.author}${p.meta ? ' · ' + p.meta : ''}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
 /* ── Contact ── */
 function renderContact() {
-  const id = CV.identity;
+  const id = T.identity;
   const actions = [];
   if (id.email) actions.push(`<a class="btn btn-primary" href="mailto:${id.email}">${ic('mail')} ${id.email}</a>`);
+  if (id.phone) actions.push(`<a class="btn btn-ghost" href="tel:${id.phone.replace(/[^0-9+]/g, '')}">${id.phone}</a>`);
   if (id.linkedin) actions.push(`<a class="btn btn-ghost" href="https://${id.linkedin}" target="_blank" rel="noopener">${ic('linkedin')} LinkedIn</a>`);
   if (id.github) actions.push(`<a class="btn btn-ghost" href="https://${id.github}" target="_blank" rel="noopener">${ic('github')} GitHub</a>`);
   $('contact-actions').innerHTML = actions.join('');
@@ -207,11 +318,11 @@ function renderContact() {
 
 /* ── Footer ── */
 function renderFooter() {
-  const now = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  const now = new Date().toLocaleDateString(DATE_LOCALES[LANG] || 'en-US', { month: 'long', year: 'numeric' });
   $('footer').innerHTML = `
-    <span>© ${new Date().getFullYear()} ${CV.identity.name}</span>
-    <span>Dibuat dengan HTML, CSS &amp; JS murni</span>
-    <span>Diperbarui ${now}</span>
+    <span>© ${new Date().getFullYear()} ${T.identity.name}</span>
+    <span>${T.ui.footerBuilt}</span>
+    <span>${T.ui.footerUpdated} ${now}</span>
   `;
 }
 
@@ -268,7 +379,7 @@ function initReveal() {
   }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
   items.forEach(el => io.observe(el));
 
-  const bars = document.querySelectorAll('.bar > i');
+  const bars = document.querySelectorAll('.bar > i, .lang-bar > i');
   const bio = new IntersectionObserver((entries) => {
     entries.forEach(en => {
       if (en.isIntersecting) {
@@ -306,14 +417,16 @@ function initCountUp() {
 /* ── Typewriter role ── */
 function initTypewriter() {
   const el = $('hero-role');
-  const roles = (CV.identity.role || '').split('|').map(s => s.trim()).filter(Boolean);
-  if (!roles.length) { el.textContent = CV.identity.shortRole || ''; return; }
+  const token = ++typerToken;
+  const roles = (T.identity.role || '').split('|').map(s => s.trim()).filter(Boolean);
+  if (!roles.length) { el.textContent = T.identity.shortRole || ''; return; }
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     el.textContent = roles[0];
     return;
   }
   let i = 0, j = 0, deleting = false;
   const step = () => {
+    if (token !== typerToken) return;
     const word = roles[i];
     el.textContent = word.slice(0, j);
     if (!deleting && j < word.length) { j++; setTimeout(step, 55); }
@@ -322,6 +435,12 @@ function initTypewriter() {
     else { deleting = false; i = (i + 1) % roles.length; setTimeout(step, 320); }
   };
   step();
+}
+
+/* ── Print ── */
+function initPrint() {
+  const btn = $('btn-print');
+  if (btn) btn.addEventListener('click', () => window.print());
 }
 
 /* ── To top ── */

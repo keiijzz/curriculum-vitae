@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enggar Irawan — Network & Infrastructure Engineer</title>
-  <meta name="description" content="CV Enggar Irawan — Infrastructure Engineer, Linux System Administrator, dan Aspiring DevOps. Fokus pada jaringan, server, observability, dan automation." />
+  <title>Enggar Irawan — Network &amp; Infrastructure Engineer</title>
+  <meta name="description" content="CV Enggar Irawan — Network & Infrastructure Engineer, Linux System Administrator, and Aspiring DevOps. Focused on networking, servers, observability, and automation." />
   <meta name="theme-color" content="#090d16" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,17 +30,21 @@
         </span>
       </a>
 
-      <nav class="nav-links" id="nav-links" aria-label="Navigasi">
-        <a href="#tentang">Tentang</a>
-        <a href="#pengalaman">Pengalaman</a>
-        <a href="#skill">Skill</a>
-        <a href="#project">Project</a>
-        <a href="#sertifikasi">Sertifikasi</a>
-        <a href="#kontak">Kontak</a>
+      <nav class="nav-links" id="nav-links" aria-label="Navigation">
+        <a href="#tentang" data-i18n="navAbout">About</a>
+        <a href="#pengalaman" data-i18n="navExp">Experience</a>
+        <a href="#skill" data-i18n="navSkills">Skills</a>
+        <a href="#project" data-i18n="navProjects">Projects</a>
+        <a href="#sertifikasi" data-i18n="navCerts">Certifications</a>
+        <a href="#kontak" data-i18n="navContact">Contact</a>
       </nav>
 
       <div class="nav-actions">
-        <button class="icon-btn" id="theme-toggle" aria-label="Ganti tema" title="Ganti tema">
+        <button class="lang-toggle" id="lang-toggle" aria-label="Switch language" title="Switch language">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3Z"/></svg>
+          <span id="lang-label">EN</span>
+        </button>
+        <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
         </button>
         <button class="btn btn-primary" id="btn-print">
@@ -66,7 +70,7 @@
           <p class="hero-pitch" id="hero-pitch"></p>
           <div class="hero-cta">
             <a class="btn btn-primary" id="cta-primary"></a>
-            <a class="btn btn-ghost" href="#pengalaman">Lihat Pengalaman</a>
+            <a class="btn btn-ghost" href="#pengalaman" data-i18n="ctaGhost">View Experience</a>
           </div>
           <div class="hero-social" id="hero-social"></div>
         </div>
@@ -88,7 +92,7 @@
     <section class="section" id="tentang">
       <div class="section-head">
         <span class="section-index">01</span>
-        <h2>Tentang</h2>
+        <h2 data-i18n="secAbout">About</h2>
       </div>
       <div class="about-grid">
         <p class="about-text reveal" id="about-text"></p>
@@ -99,7 +103,7 @@
     <section class="section" id="pengalaman">
       <div class="section-head">
         <span class="section-index">02</span>
-        <h2>Pengalaman Kerja</h2>
+        <h2 data-i18n="secExp">Work Experience</h2>
       </div>
       <div class="timeline" id="experience"></div>
     </section>
@@ -107,37 +111,51 @@
     <section class="section" id="skill">
       <div class="section-head">
         <span class="section-index">03</span>
-        <h2>Keahlian</h2>
+        <h2 data-i18n="secSkills">Skills</h2>
       </div>
       <div class="skills" id="skills"></div>
     </section>
 
-    <section class="section" id="project">
+    <section class="section" id="bahasa">
       <div class="section-head">
         <span class="section-index">04</span>
-        <h2>Project &amp; Publikasi</h2>
+        <h2 data-i18n="secLangs">Languages</h2>
+      </div>
+      <div class="lang-grid" id="languages"></div>
+    </section>
+
+    <section class="section" id="project">
+      <div class="section-head">
+        <span class="section-index">05</span>
+        <h2 data-i18n="secProjects">Projects &amp; Publications</h2>
       </div>
       <div class="projects" id="projects"></div>
     </section>
 
     <section class="section" id="sertifikasi">
       <div class="section-head">
-        <span class="section-index">05</span>
-        <h2>Sertifikasi</h2>
+        <span class="section-index">06</span>
+        <h2 data-i18n="secCerts">Certifications</h2>
       </div>
       <div class="certs" id="certifications"></div>
-      <div class="edu-wrap">
-        <h3 class="sub-title">Pendidikan</h3>
+
+      <div class="sub-wrap">
+        <h3 class="sub-title" data-i18n="eduTitle">Education</h3>
         <div id="education"></div>
+      </div>
+
+      <div class="sub-wrap">
+        <h3 class="sub-title" data-i18n="pubTitle">Publications</h3>
+        <div id="publications"></div>
       </div>
     </section>
 
     <section class="section contact" id="kontak">
       <div class="contact-card reveal">
         <span class="contact-glow" aria-hidden="true"></span>
-        <p class="contact-eyebrow">Mari terhubung</p>
-        <h2>Punya project atau peluang yang cocok?</h2>
-        <p class="contact-sub">Gue terbuka untuk diskusi seputar infrastruktur jaringan, Linux, monitoring, atau kolaborasi DevOps.</p>
+        <p class="contact-eyebrow" data-i18n="contactEyebrow">Let's connect</p>
+        <h2 data-i18n="contactTitle">Have a project or an opportunity that fits?</h2>
+        <p class="contact-sub" data-i18n="contactSub"></p>
         <div class="contact-actions" id="contact-actions"></div>
       </div>
     </section>
@@ -146,7 +164,7 @@
 
   <footer class="footer" id="footer"></footer>
 
-  <button class="to-top" id="to-top" aria-label="Kembali ke atas">
+  <button class="to-top" id="to-top" aria-label="Back to top">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
   </button>
 
