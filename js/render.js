@@ -1,364 +1,332 @@
 /**
- * render.js — Render CV ala GitHub profile dari data.js
+ * render.js — Render + interaksi CV
  */
 
 const ICONS = {
-  location: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C4.583 0 2 2.55 2 6c0 3.1 2 6.578 3.687 8.546l1.007 1.177a.75.75 0 0 0 1.161 0l1.006-1.177C11 12.578 13 9.1 13 6c0-3.45-2.583-6-7-6Zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"></path></svg>',
-  link: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M7.775 3.275a.75.75 0 0 0 1.06 1.06l1.25-1.25a2 2 0 1 1 2.83 2.83l-2.5 2.5a2 2 0 0 1-2.83 0 .75.75 0 0 0-1.06 1.06 3.5 3.5 0 0 0 4.95 0l2.5-2.5a3.5 3.5 0 0 0-4.95-4.95l-1.25 1.25Zm-4.69 9.64a2 2 0 0 1 0-2.83l2.5-2.5a2 2 0 0 1 2.83 0 .75.75 0 0 0 1.06-1.06 3.5 3.5 0 0 0-4.95 0l-2.5 2.5a3.5 3.5 0 0 0 4.95 4.95l1.25-1.25a.75.75 0 0 0-1.06-1.06l-1.25 1.25a2 2 0 0 1-2.83 0Z"></path></svg>',
-  mail: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"></path></svg>',
-  github: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>',
-  linkedin: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146Zm4.943 12.248V6.169H2.542v7.225h2.401Zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016Zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4Z"></path></svg>',
-  star: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.817 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>',
-  fork: '<svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path></svg>',
-  check: '<svg class="icon" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path fill="currentColor" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7.5 8.5 6 8.5-6"/></svg>',
+  linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 5.5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0ZM3.3 8.98h3.3V21H3.3V8.98Zm5.4 0h3.16v1.64h.05c.44-.8 1.5-1.64 3.1-1.64 3.32 0 3.93 2.12 3.93 4.87V21h-3.3v-5.86c0-1.4-.03-3.2-2-3.2-1.96 0-2.26 1.5-2.26 3.1V21H8.7V8.98Z"/></svg>',
+  github: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>',
+  location: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.6 7-11a7 7 0 1 0-14 0c0 4.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 13.5a4 4 0 0 0 5.66 0l2.6-2.6a4 4 0 1 0-5.66-5.66l-1.3 1.3"/><path d="M13.5 10.5a4 4 0 0 0-5.66 0l-2.6 2.6a4 4 0 1 0 5.66 5.66l1.3-1.3"/></svg>',
+  external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>',
+  network: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.4"/><circle cx="5" cy="19" r="2.4"/><circle cx="19" cy="19" r="2.4"/><path d="M12 7.5v3.5"/><path d="m12 11 -5.5 5.5"/><path d="m12 11 5.5 5.5"/></svg>',
+  server: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="7" rx="2"/><rect x="3.5" y="13" width="17" height="7" rx="2"/><path d="M7.5 7.5h.01M7.5 16.5h.01"/></svg>',
+  activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.4-6 5 12L17 12h4"/></svg>',
+  cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1 .6-8A5.5 5.5 0 0 1 18 10.6 3.7 3.7 0 0 1 17.5 18H7Z"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>',
 };
 
-const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const DAY_SHOW = { 0: 'Sun', 2: 'Tue', 4: 'Thu' };
-const MONTH_LETTERS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+const $ = (id) => document.getElementById(id);
+const ic = (n) => ICONS[n] || '';
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderAvatar();
-  renderProfileText();
-  renderMeta();
-  renderStatus();
-  renderActions();
+  renderBrand();
+  renderHero();
   renderStats();
-  renderHeatmap();
-  renderPinned();
-  renderSkills();
-  renderHighlights();
-  renderOrgs();
-  renderContacts();
+  renderAbout();
+  renderExpertise();
   renderExperience();
+  renderSkills();
   renderProjects();
   renderCertifications();
   renderEducation();
+  renderContact();
   renderFooter();
-  initTabs();
+  initTheme();
+  initNav();
+  initReveal();
+  initCountUp();
+  initTypewriter();
+  initToTop();
+  finalizeForPrint();
 });
 
-function mulberry32(seed) {
-  let a = ((seed >>> 0) * 1664525 + 1013904223) >>> 0;
-  return () => {
-    a += 0x6D2B79F5;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function hashSeed(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
-  return h;
-}
-
-function drawIdenticon(seedStr, size) {
-  const c = document.createElement('canvas');
-  c.width = size; c.height = size;
-  const ctx = c.getContext('2d');
-  const rng = mulberry32(hashSeed(seedStr));
-  const palette = ['#4362ee', '#8c44e3', '#ee4242', '#3a7d44', '#4a9c8b', '#c58a1f', '#a33f9b', '#3b82a0'];
-  const color = palette[Math.floor(rng() * palette.length)];
-  ctx.fillStyle = '#eaeef2';
-  ctx.fillRect(0, 0, size, size);
-  const n = 5, cell = size / n;
-  const ins = cell * 0.16;
-  const draw = (x, y) => {
-    ctx.fillStyle = color;
-    if (ctx.roundRect) ctx.beginPath(), ctx.roundRect(x * cell + ins, y * cell + ins, cell - ins * 2, cell - ins * 2, 3), ctx.fill();
-    else ctx.fillRect(x * cell + ins, y * cell + ins, cell - ins * 2, cell - ins * 2);
-  };
-  for (let y = 0; y < n; y++) {
-    for (let x = 0; x < Math.ceil(n / 2); x++) {
-      if (rng() > 0.52) {
-        draw(x, y);
-        const mx = n - 1 - x;
-        if (mx !== x) draw(mx, y);
-      }
-    }
-  }
-  return c.toDataURL();
-}
-
-function icon(name) { return ICONS[name] || ''; }
-
-function renderAvatar() {
-  const el = document.getElementById('gh-avatar');
-  const src = CV.identity.avatar || drawIdenticon(CV.identity.name, 192);
-  el.src = src;
-}
-
-function renderProfileText() {
-  document.getElementById('gh-name').textContent = CV.identity.name;
-  document.getElementById('gh-handle').textContent = CV.identity.handle ? '@' + CV.identity.handle.replace(/^@/, '') : '';
-  document.getElementById('gh-about').textContent = CV.identity.role;
-  document.getElementById('gh-about-text').textContent = CV.identity.about;
-}
-
-function renderMeta() {
-  const { location, email, phone, linkedin, github, website } = CV.identity;
-  const items = [];
-  if (location) items.push({ icon: 'location', txt: location, href: null });
-  if (website) items.push({ icon: 'link', txt: website.replace(/^https?:\/\//, ''), href: `https://${website}` });
-  if (email) items.push({ icon: 'mail', txt: email, href: `mailto:${email}` });
-  if (phone) items.push({ icon: 'check', txt: phone, href: `tel:${phone.replace(/[\s-]/g, '')}` });
-  if (linkedin) items.push({ icon: 'linkedin', txt: 'LinkedIn', href: `https://${linkedin}` });
-  if (github) items.push({ icon: 'github', txt: 'GitHub', href: `https://${github}` });
-  const html = items.map(it =>
-    it.href
-      ? `<span class="gh-meta-item">${icon(it.icon)}<a href="${it.href}" target="_blank" rel="noopener">${it.txt}</a></span>`
-      : `<span class="gh-meta-item">${icon(it.icon)}<span>${it.txt}</span></span>`
-  ).join('');
-  document.getElementById('gh-meta').innerHTML = html;
-}
-
-function renderStatus() {
-  const el = document.getElementById('gh-status');
-  if (!CV.identity.status) { el.style.display = 'none'; return; }
-  el.innerHTML = `<span class="dot"></span>${CV.identity.status}`;
-}
-
-function renderActions() {
-  const github = CV.identity.github;
-  const linkedin = CV.identity.linkedin;
-  const btnG = document.getElementById('btn-github');
-  const btnL = document.getElementById('btn-linkedin');
-  const init = (btn, href) => { if (href) { btn.href = `https://${href}`; } else { btn.style.display = 'none'; } };
-  init(btnG, github);
-  init(btnL, linkedin);
-}
-
-function renderStats() {
-  const html = CV.stats.map(s => `
-    <div class="gh-stat">
-      <div class="gh-stat-num">${s.num}</div>
-      <div class="gh-stat-label">${s.label}</div>
-    </div>
-  `).join('');
-  document.getElementById('gh-stats').innerHTML = html;
-}
-
-function renderHeatmap() {
-  const root = document.getElementById('gh-heatmap');
-  const title = document.getElementById('gh-heat-title');
-  const legendEl = document.getElementById('gh-heat-legend');
-
-  document.getElementById('gh-heat-legend').classList.add('gh-legend');
-  legendEl.innerHTML = 'Kurang' +
-    [0, 1, 2, 3, 4].map(l => `<i class="hm-l${l}"></i>`).join('') +
-    'Lebih';
-
-  if (CV.heatmap === 'hidden') { root.style.display = 'none'; title.textContent = ''; return; }
-
-  const today = new Date();
-  const days = 364;
-  const start = new Date(today);
-  start.setDate(start.getDate() - days);
-  start.setHours(0, 0, 0, 0);
-
-  const rng = mulberry32(hashSeed(CV.heatSeed || 'enggar'));
-  const cells = [];
-  for (let i = 0; i < days + 1; i++) {
-    const r = rng();
-    let lvl = 0;
-    if (r > 0.78) lvl = 4;
-    else if (r > 0.66) lvl = 3;
-    else if (r > 0.5) lvl = 2;
-    else if (r > 0.34) lvl = 1;
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
-    cells.push({ d, lvl });
-  }
-
-  const weeks = [];
-  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
-
-  title.textContent = `${weeks.length} minggu terakhir — ${new Date().getFullYear()}`;
-
-  const col = (n) => `grid-column:${n};`;
-  const row = (n) => `grid-row:${n};`;
-  let html = `<span class="hm-day" style="${col(1)}${row(1)}"></span>`;
-
-  let lastMonth = -1;
-  weeks.forEach((wk, wi) => {
-    const startPos = 2 + wi;
-    const m = wk[0].d.getMonth();
-    if (m !== lastMonth) {
-      html += `<span class="hm-month" style="${col(startPos)}${row(1)}">${MONTH_LETTERS[m]}</span>`;
-      lastMonth = m;
-    }
-    wk.forEach((cell, di) => {
-      if (di === 0 && wi === 0) {
-        html += `<span class="hm-day" style="${col(1)}${row(2)}">${DAY_LABELS[0]}</span>`;
-      }
-      if (di === 2 && wi === 0) {
-        html += `<span class="hm-day" style="${col(1)}${row(4)}">${DAY_LABELS[2]}</span>`;
-      }
-      if (di === 4 && wi === 0) {
-        html += `<span class="hm-day" style="${col(1)}${row(6)}">${DAY_LABELS[4]}</span>`;
-      }
-      const lvlCls = cell.lvl === 0 ? '' : ` hm-l${cell.lvl}`;
-      const tip = `${cell.d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })} — ${cell.lvl} heatmap`;
-      html += `<span class="hm-cell${lvlCls}" style="${col(startPos)}${row(2 + di)}" title="${tip}"></span>`;
+/* ── Pastikan nilai final tampil saat di-print ── */
+function finalizeForPrint() {
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('.stat-num').forEach(el => {
+      el.textContent = (parseFloat(el.dataset.target) || 0) + (el.dataset.suffix || '');
     });
+    const role = $('hero-role');
+    if (role) role.textContent = (CV.identity.role || '').split('|')[0].trim();
   });
-
-  root.innerHTML = html;
-  root.style.gridTemplateColumns = `26px repeat(${weeks.length}, 10px)`;
 }
 
-function renderPinned() {
-  const list = (CV.projects || []).slice(0, 4);
-  const countEl = document.getElementById('gh-pinned-count');
-  if (countEl) countEl.textContent = list.length;
-  const html = list.map(p => `
-    <a class="gh-pin" ${p.link ? `href="${p.link}" target="_blank" rel="noopener"` : ''}>
-      <span class="gh-pin-name"><span class="pin-mark">📌</span>${p.title}</span>
-      <span class="gh-pin-desc">${p.desc}</span>
-      <span>
-        ${p.stack.slice(0, 5).map(t => `<span class="gh-topic">${t}</span>`).join('')}
-      </span>
-      <span class="gh-pin-foot">
-        <span><span class="lang-dot" style="background:${p.langColor || '#0969da'}"></span>${p.lang || 'Tech'}</span>
-        <span class="${p.visibility === 'Public' ? 'gh-vis pub' : 'gh-vis'}">${p.visibility || 'Private'}</span>
-      </span>
-    </a>
+/* ── Brand ── */
+function renderBrand() {
+  $('brand-name').textContent = CV.identity.name;
+  $('brand-role').textContent = CV.identity.shortRole || 'Network & Infrastructure';
+}
+
+/* ── Hero ── */
+function renderHero() {
+  const id = CV.identity;
+  $('hero-eyebrow').innerHTML = `&lt;/&gt; ${id.eyebrow || 'Network & Infrastructure Engineer'}`;
+  $('hero-name').textContent = id.name;
+  $('hero-pitch').textContent = id.tagline || id.about;
+
+  const cta = $('cta-primary');
+  if (id.email) { cta.href = `mailto:${id.email}`; cta.innerHTML = `${ic('mail')} Hubungi Saya`; }
+  else cta.style.display = 'none';
+
+  const social = [];
+  if (id.github) social.push({ icon: 'github', href: `https://${id.github}`, label: 'GitHub' });
+  if (id.linkedin) social.push({ icon: 'linkedin', href: `https://${id.linkedin}`, label: 'LinkedIn' });
+  if (id.email) social.push({ icon: 'mail', href: `mailto:${id.email}`, label: 'Email' });
+  if (id.website) social.push({ icon: 'link', href: `https://${id.website}`, label: 'Website' });
+  $('hero-social').innerHTML = social.map(s =>
+    `<a href="${s.href}" target="_blank" rel="noopener" aria-label="${s.label}" title="${s.label}">${ic(s.icon)}</a>`
+  ).join('');
+
+  const initials = id.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('hero-avatar').innerHTML = id.avatar
+    ? `<img src="${id.avatar}" alt="${id.name}" />`
+    : `<span class="monogram">${initials}</span>`;
+  $('hc-name').textContent = id.name;
+  $('hc-role').textContent = id.shortRole || 'Network & Infrastructure';
+  $('hc-meta').innerHTML = [
+    id.location ? `<span class="hc-item">${ic('location')}${id.location}</span>` : '',
+    id.email ? `<span class="hc-item">${ic('mail')}<a href="mailto:${id.email}">${id.email}</a></span>` : '',
+    id.github ? `<span class="hc-item">${ic('github')}<a href="https://${id.github}" target="_blank" rel="noopener">${id.github}</a></span>` : '',
+    id.linkedin ? `<span class="hc-item">${ic('linkedin')}<a href="https://${id.linkedin}" target="_blank" rel="noopener">LinkedIn</a></span>` : '',
+  ].join('');
+}
+
+/* ── Stats ── */
+function renderStats() {
+  $('stats').innerHTML = CV.stats.map(s => `
+    <div class="stat reveal">
+      <div class="stat-num" data-target="${s.num}" data-suffix="${s.suffix || ''}">0</div>
+      <div class="stat-label">${s.label}</div>
+    </div>
   `).join('');
-  document.getElementById('gh-pinned').innerHTML = html;
 }
 
+/* ── About + expertise ── */
+function renderAbout() {
+  $('about-text').textContent = CV.identity.about;
+}
+function renderExpertise() {
+  $('expertise').innerHTML = CV.expertise.map(e => `
+    <div class="exp-card reveal">
+      <div class="exp-head">
+        <span class="exp-ic">${ic(e.icon)}</span>
+        <span class="exp-title">${e.title}</span>
+      </div>
+      <p class="exp-desc">${e.desc}</p>
+      <div class="exp-tags">${e.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Experience ── */
+function renderExperience() {
+  $('experience').innerHTML = CV.experience.map(exp => `
+    <div class="tl-item reveal${exp.current ? ' current' : ''}">
+      <span class="tl-dot"></span>
+      <div class="tl-card">
+        <div class="tl-top">
+          <div>
+            <h3 class="tl-role">${exp.role}</h3>
+            <p class="tl-company"><b>${exp.company}</b>${exp.location ? ' · ' + exp.location : ''}</p>
+          </div>
+          <span class="tl-period">${exp.period}</span>
+        </div>
+        <ul class="tl-points">${exp.points.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Skills ── */
 function renderSkills() {
-  const countEl = document.getElementById('gh-skills-count');
-  if (countEl) countEl.textContent = CV.skills.length;
-  const html = CV.skills.map(g => `
-    <div class="gh-skill">
-      <div class="gh-skill-top">
-        <span class="gh-skill-name">${g.category}</span>
-        <span class="gh-skill-pct">${g.level}%</span>
+  $('skills').innerHTML = CV.skills.map(g => `
+    <div class="skill-card reveal">
+      <div class="skill-top">
+        <span class="skill-name">${g.category}</span>
+        <span class="skill-pct">${g.level}%</span>
       </div>
-      <div class="gh-bar"><i style="width:${g.level}%"></i></div>
-      <div class="gh-skill-chips">
-        ${g.items.map(s => `<span class="gh-topic">${s}</span>`).join('')}
+      <div class="bar"><i data-level="${g.level}" style="--pct:${g.level}%"></i></div>
+      <div class="skill-chips">${g.items.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Projects ── */
+function renderProjects() {
+  $('projects').innerHTML = CV.projects.map(p => `
+    <article class="project reveal">
+      <div class="proj-top">
+        <span class="proj-period">${p.period}</span>
+        ${p.link ? `<a class="proj-link" href="${p.link}" target="_blank" rel="noopener" title="Buka">${ic('external')}</a>` : ''}
+      </div>
+      <h3 class="proj-title">${p.title}</h3>
+      <p class="proj-desc">${p.desc}</p>
+      <div class="proj-tags">${p.stack.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    </article>
+  `).join('');
+}
+
+/* ── Certifications ── */
+function renderCertifications() {
+  $('certifications').innerHTML = CV.certifications.map(c => `
+    <div class="cert reveal">
+      <span class="cert-ic">${c.badge || '🏅'}</span>
+      <div>
+        <p class="cert-name">${c.name}</p>
+        <p class="cert-issuer">${c.issuer}${c.year ? ' · ' + c.year : ''}</p>
       </div>
     </div>
   `).join('');
-  document.getElementById('gh-skills').innerHTML = html;
 }
 
-function renderHighlights() {
-  const html = (CV.highlights || []).map(h => `<li>${h}</li>`).join('');
-  document.getElementById('gh-highlights').innerHTML = html;
-}
-
-function renderOrgs() {
-  const html = (CV.orgs || []).map(o => `
-    <span class="gh-org-item">
-      <span class="gh-org-logo" style="background:${o.color}">${o.short}</span>
-      ${o.name}
-    </span>
-  `).join('');
-  document.getElementById('gh-orgs').innerHTML = html;
-}
-
-function renderContacts() {
-  const { email, linkedin, github, website } = CV.identity;
-  const items = [];
-  if (email) items.push({ icon: 'mail', txt: email, href: `mailto:${email}` });
-  if (linkedin) items.push({ icon: 'linkedin', txt: linkedin, href: `https://${linkedin}` });
-  if (github) items.push({ icon: 'github', txt: github, href: `https://${github}` });
-  if (website) items.push({ icon: 'link', txt: website.replace(/^https?:\/\//, ''), href: `https://${website}` });
-  const html = items.map(it =>
-    `<a href="${it.href}" target="_blank" rel="noopener">${icon(it.icon)}<span class="gh-trunc">${it.txt}</span></a>`
-  ).join('') || '<span class="gh-meta-item">—</span>';
-  document.getElementById('gh-contacts').innerHTML = html;
-}
-
-function repoRow(item, opts) {
-  const badge = item.period ? `<span class="gh-row-badge">${item.period}</span>` : '';
-  const roleLabel = item.roleLabel ? `<span class="gh-role-label">${item.roleLabel}</span>` : '';
-  const points = (item.points || []).map(p => `<li>${p}</li>`).join('');
-  const stack = (item.stack || []).map(t => `<span class="gh-topic">${t}</span>`).join('');
-  const lang = item.lang ? `<span><span class="lang-dot" style="background:${item.langColor || '#0969da'}"></span>${item.lang}</span>` : '';
-  const meta = (lang || stack || '') && `<div class="gh-row-meta">${lang}${stack ? `<span class="gh-stack">${stack}</span>` : ''}</div>`;
-  return `
-    <div class="gh-row">
-      <div class="gh-row-title">
-        <span class="gh-row-name">${roleLabel}${item.role || item.title}</span>
-        ${badge}
+/* ── Education ── */
+function renderEducation() {
+  $('education').innerHTML = CV.education.map(e => `
+    <div class="edu-card reveal">
+      <div>
+        <p class="edu-degree">${e.degree}</p>
+        <p class="edu-school">${e.school}${e.location ? ' · ' + e.location : ''}</p>
+        ${e.points ? `<ul class="edu-points">${e.points.map(p => `<li>${p}</li>`).join('')}</ul>` : ''}
       </div>
-      ${item.company ? `<div class="gh-row-sub">${item.company}${item.location ? ' · ' + item.location : ''}</div>` : ''}
-      ${item.school ? `<div class="gh-row-sub">${item.school}${item.location ? ' · ' + item.location : ''}</div>` : ''}
-      ${item.desc ? `<p class="gh-row-desc">${item.desc}</p>` : ''}
-      ${points ? `<ul class="gh-row-points">${points}</ul>` : ''}
-      ${meta || ''}
+      <span class="tl-period">${e.period}</span>
     </div>
+  `).join('');
+}
+
+/* ── Contact ── */
+function renderContact() {
+  const id = CV.identity;
+  const actions = [];
+  if (id.email) actions.push(`<a class="btn btn-primary" href="mailto:${id.email}">${ic('mail')} ${id.email}</a>`);
+  if (id.linkedin) actions.push(`<a class="btn btn-ghost" href="https://${id.linkedin}" target="_blank" rel="noopener">${ic('linkedin')} LinkedIn</a>`);
+  if (id.github) actions.push(`<a class="btn btn-ghost" href="https://${id.github}" target="_blank" rel="noopener">${ic('github')} GitHub</a>`);
+  $('contact-actions').innerHTML = actions.join('');
+}
+
+/* ── Footer ── */
+function renderFooter() {
+  const now = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  $('footer').innerHTML = `
+    <span>© ${new Date().getFullYear()} ${CV.identity.name}</span>
+    <span>Dibuat dengan HTML, CSS &amp; JS murni</span>
+    <span>Diperbarui ${now}</span>
   `;
 }
 
-function renderExperience() {
-  const countEl = document.getElementById('gh-exp-count');
-  if (countEl) countEl.textContent = CV.experience.length;
-  const html = CV.experience.map(e => repoRow(e, { role: true })).join('');
-  document.getElementById('gh-experience').innerHTML = html;
-}
-
-function renderProjects() {
-  const countEl = document.getElementById('gh-projects-count');
-  if (countEl) countEl.textContent = CV.projects.length;
-  const html = CV.projects.map(p => repoRow(p)).join('');
-  document.getElementById('gh-projects').innerHTML = html;
-}
-
-function renderCertifications() {
-  const countEl = document.getElementById('gh-certs-count');
-  if (countEl) countEl.textContent = CV.certifications.length;
-  const badges = ['🏅', '🎓', '📡', '🔐', '🐍', '☁️', '🛡️'];
-  const html = CV.certifications.map((c, i) => `
-    <div class="gh-ach-item">
-      <span class="gh-ach-icon">${c.badge || badges[i % badges.length]}</span>
-      <div>
-        <p class="gh-ach-name">${c.name}</p>
-        <p class="gh-ach-meta">${c.issuer}${c.year ? ' · ' + c.year : ''}</p>
-      </div>
-    </div>
-  `).join('');
-  document.getElementById('gh-certifications').innerHTML = html;
-}
-
-function renderEducation() {
-  const countEl = document.getElementById('gh-edu-count');
-  if (countEl) countEl.textContent = CV.education.length;
-  const html = CV.education.map(e => repoRow({
-    title: e.degree,
-    roleLabel: 'Degree',
-    school: e.school,
-    location: e.location,
-    period: e.period,
-    points: e.points || [],
-    desc: e.desc || '',
-  })).join('');
-  document.getElementById('gh-education').innerHTML = html;
-}
-
-function renderFooter() {
-  const f = document.getElementById('cv-footer');
-  const now = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-  f.innerHTML = `<span>${CV.identity.name} — CV</span><span>Updated ${now}</span>`;
-}
-
-function initTabs() {
-  const tabs = document.querySelectorAll('.gh-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.gh-panel').forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      const panel = document.getElementById(tab.dataset.panel);
-      if (panel) panel.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+/* ── Theme toggle ── */
+function initTheme() {
+  const root = document.documentElement;
+  const btn = $('theme-toggle');
+  const apply = (t) => {
+    root.setAttribute('data-theme', t);
+    btn.innerHTML = t === 'dark' ? ic('moon') : ic('sun');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'dark' ? '#090d16' : '#f6f8fc');
+  };
+  apply(root.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+  btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try { localStorage.setItem('cv-theme', next); } catch (e) {}
   });
+}
+
+/* ── Nav: scroll state + scrollspy ── */
+function initNav() {
+  const nav = $('nav');
+  const links = Array.from(document.querySelectorAll('.nav-links a'));
+  const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+  const onScroll = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+    const pos = window.scrollY + 140;
+    let active = sections[0];
+    sections.forEach(s => { if (s.offsetTop <= pos) active = s; });
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + (active && active.id)));
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+/* ── Reveal on scroll ── */
+function initReveal() {
+  const items = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    items.forEach(el => el.classList.add('in'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en, i) => {
+      if (en.isIntersecting) {
+        en.target.style.transitionDelay = Math.min(i * 70, 280) + 'ms';
+        en.target.classList.add('in');
+        io.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  items.forEach(el => io.observe(el));
+
+  const bars = document.querySelectorAll('.bar > i');
+  const bio = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        en.target.style.width = en.target.dataset.level + '%';
+        bio.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  bars.forEach(b => bio.observe(b));
+}
+
+/* ── Count up ── */
+function initCountUp() {
+  const nums = document.querySelectorAll('.stat-num');
+  const run = (el) => {
+    const target = parseFloat(el.dataset.target) || 0;
+    const suffix = el.dataset.suffix || '';
+    const dur = 1400;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if (!('IntersectionObserver' in window)) { nums.forEach(run); return; }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } });
+  }, { threshold: 0.6 });
+  nums.forEach(n => io.observe(n));
+}
+
+/* ── Typewriter role ── */
+function initTypewriter() {
+  const el = $('hero-role');
+  const roles = (CV.identity.role || '').split('|').map(s => s.trim()).filter(Boolean);
+  if (!roles.length) { el.textContent = CV.identity.shortRole || ''; return; }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = roles[0];
+    return;
+  }
+  let i = 0, j = 0, deleting = false;
+  const step = () => {
+    const word = roles[i];
+    el.textContent = word.slice(0, j);
+    if (!deleting && j < word.length) { j++; setTimeout(step, 55); }
+    else if (!deleting && j === word.length) { deleting = true; setTimeout(step, 1600); }
+    else if (deleting && j > 0) { j--; setTimeout(step, 28); }
+    else { deleting = false; i = (i + 1) % roles.length; setTimeout(step, 320); }
+  };
+  step();
+}
+
+/* ── To top ── */
+function initToTop() {
+  const btn = $('to-top');
+  window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 600), { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
